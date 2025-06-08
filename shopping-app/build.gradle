@@ -32,7 +32,7 @@ dependencies {
 
 
 application {
-    mainClass = "com.example.Application"
+    mainClass = "com.example.shopping.Application"
 }
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
