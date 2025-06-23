@@ -6,4 +6,10 @@ services:
       - PORT=8080
     ports:
       - "8080:8080"
-    
+  vue-frontend:
+    build:
+      context: ./frontend      
+      dockerfile: Dockerfile
+    ports:
+      - "8081:80"     
+    restart: unless-stopped
