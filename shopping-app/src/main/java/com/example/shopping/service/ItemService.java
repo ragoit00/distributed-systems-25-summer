@@ -13,11 +13,10 @@ public class ItemService {
     private final AtomicLong counter = new AtomicLong(1);
 
     public List<Item> findAll() {
-        return List.copyOf(items.values());
+        return new ArrayList<>(items.values());
     }
 
     public Optional<Item> findById(Long id) {
-        Objects.requireNonNull(id, "ID darf nicht null sein.");
         return Optional.ofNullable(items.get(id));
     }
 
@@ -34,7 +33,7 @@ public class ItemService {
             return item;
             
         }
-        Item newItem = new Item(counter.getAndIncrement(), name, quantity);
+        Item newItem = new Item(name, quantity);
         items.put(newItem.getId(), newItem);
         return newItem;
     }
