@@ -1,9 +1,11 @@
 version: '3.8'
 services:
-  shopping-app:
-    container_name: backend
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
     environment:
-      - PORT=8080
+      - PORT=3000
     ports:
       - "8080:8080"
   vue-frontend:
