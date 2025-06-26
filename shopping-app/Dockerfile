@@ -11,8 +11,8 @@ WORKDIR /app
 COPY --from=build /app/build/libs/*-all.jar /app/app.jar
 
 # Port und ENV für Micronaut
-EXPOSE 8080
-ENV MICRONAUT_SERVER_PORT=8080
+EXPOSE 3000
+ENV MICRONAUT_SERVER_PORT=3000
 
 # Start der Anwendung
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
