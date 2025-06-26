@@ -1,17 +1,21 @@
 package com.example.shopping.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Schema(name = "Item", description = "Represents a shopping list item")
 public class Item {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private int quantity;
 
     public Item() {}
 
-    public Item(Long id, String name, int quantity) {
-        this.id = id;
+    public Item(String name, int quantity) {
         this.name = name;
         this.quantity = quantity;
     }
@@ -40,6 +44,9 @@ public class Item {
         this.quantity = quantity;
     }
 
-
+    public void increaseQuantity(int additionalQuantity) {
+        this.quantity += additionalQuantity;
+    }
+    
     // Getters and setters
 }
