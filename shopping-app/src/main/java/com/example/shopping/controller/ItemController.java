@@ -25,7 +25,7 @@ public class ItemController {
     }
 
     @Get("/{id}")
-    public HttpResponse<Item> getItemById(@PathVariable Long id) {
+    public HttpResponse<Item> getItemById(Long id) {
         return service.findById(id)
                 .map(HttpResponse::ok)
                 .orElse(HttpResponse.notFound());
