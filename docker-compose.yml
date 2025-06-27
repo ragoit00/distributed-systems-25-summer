@@ -1,13 +1,30 @@
 version: '3.8'
 services:
-  backend:
-    build: ./backend
-    ports:
-      - "3000:3000"
+  mysql:
+    image: mysql:8.0
+    container_name: database
     environment:
-      - PORT=3000
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: shopping_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+  backend:
+    image: backend:micronaut
+    container_name: backend
     ports:
       - "8080:8080"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=shopping_db
+      - DB_USER=root
+      - DB_PASSWORD=root
+    depends_on:
+      - mysql
   vue-frontend:
     build:
       context: ./frontend      

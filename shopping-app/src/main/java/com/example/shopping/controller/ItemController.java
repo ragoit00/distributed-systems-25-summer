@@ -21,12 +21,12 @@ public class ItemController {
 
     @Get("/")
     public List<Item> getItems() {
-        return service.findAll();
+        return service.getAllItems();
     }
 
     @Get("/{id}")
     public HttpResponse<Item> getItemById(Long id) {
-        return service.findById(id)
+        return service.getItemById(id)
                 .map(HttpResponse::ok)
                 .orElse(HttpResponse.notFound());
     }
@@ -44,7 +44,7 @@ public class ItemController {
     @Put("/{id}")
     public HttpResponse<Item> updateItem(Long id, @Body ItemRequest request) {
         try {
-            Optional<Item> updated = service.update(id, request.name(), request.quantity());
+            Optional<Item> updated = service.updateItem(id, request.name(), request.quantity());
             return updated.map(HttpResponse::ok)
                     .orElse(HttpResponse.notFound());
         } catch (IllegalArgumentException e) {

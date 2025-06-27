@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  selector:
+    app: mysql
+  ports:
+    - port: 3306        # Port, über den der Service erreichbar ist
+      targetPort: 3306  # Port, auf den der Container hört
+  type: ClusterIP      # Interner Service im Cluster

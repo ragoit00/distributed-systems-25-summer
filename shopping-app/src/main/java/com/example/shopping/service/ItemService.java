@@ -5,18 +5,18 @@ import jakarta.inject.Singleton;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+// import java.util.concurrent.atomic.AtomicLong;
 
 @Singleton
 public class ItemService {
     private final Map<Long, Item> items = new ConcurrentHashMap<>();
-    private final AtomicLong counter = new AtomicLong(1);
+    // private final AtomicLong counter = new AtomicLong(1);
 
-    public List<Item> findAll() {
+    public List<Item> getAllItems() {
         return new ArrayList<>(items.values());
     }
 
-    public Optional<Item> findById(Long id) {
+    public Optional<Item> getItemById(Long id) {
         return Optional.ofNullable(items.get(id));
     }
 
@@ -38,7 +38,7 @@ public class ItemService {
         return newItem;
     }
 
-    public Optional<Item> update(Long id, String name, int quantity) {
+    public Optional<Item> updateItem(Long id, String name, int quantity) {
         validateInput(name, quantity);
         return Optional.ofNullable(items.get(id))
                 .map(item -> {
