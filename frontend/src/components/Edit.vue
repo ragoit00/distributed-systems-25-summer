@@ -4,7 +4,7 @@
       <div class="header">
         <h1>Item {{ item?.id }}</h1>
         <div class="button-group">
-          <button class="action-button" @click="goToItem(item.id)">Save changes</button>
+          <button class="action-button" @click="editItem(item.id)">Save changes</button>
         </div>
       </div>
 
@@ -33,23 +33,88 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import items from '../data/items.json'
 
 const route = useRoute()
 const router = useRouter()
 const id = Number(route.params.id)
 
+let items = [
+        { id: 1, name: 'Apfel', quantity: 5 },
+        { id: 2, name: 'Milch', quantity: 2 },
+        { id: 3, name: 'Brot', quantity: 1 },
+        { id: 4, name: 'Eier', quantity: 10 },
+      ];
+
 const item = items.find(i => i.id === id)
 const editableName = ref(item?.name || '')
 const editableQuantity = ref(item?.quantity || 0)
 
-function goToItem(id){
-    //hier bearbeiten logik vom backend
-    item.name = editableName.value;
-    item.quantity = editableQuantity.value
-    console.log("neue item daten", editableName, editableQuantity);
-    router.push(`/items/${id}`);
+const fetchItems = async () => {
+  try {
+    console.log("Trying to fetch....")
+    const res = await fetch(`http://localhost:8080/items/${id}`);
+    if (!res.ok) throw new Error('Fehler beim Abrufen der Items');
+    const data = await res.json();
+    console.log("Items fetched correctly.")
+    if (Array.isArray(data) && data.length === 0) {
+      console.warn('API liefert leeres Array – Fallback-Daten werden verwendet.');
+
+      // items.value = [
+      //   { id: 1, name: 'Apfel', quantity: 5 },
+      //   { id: 2, name: 'Milch', quantity: 2 },
+      //   { id: 3, name: 'Brot', quantity: 1 },
+      //   { id: 4, name: 'Eier', quantity: 10 },
+      // ];
+    } else {
+      items.value = data;
+      console.log("Items fetched correctly.")
+    }
+  } catch (err) {
+    console.error('Fehler beim Laden der Items:', err.message);
+  }
+};
+
+onMounted(fetchItems);
+
+async function editItem(id) {
+  const updatedItem = {
+    name: item.name,
+    quantity: item.quantity
+  }
+
+  try {
+    const response = await fetch(`http://localhost:8080/items/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updatedItem)
+    })
+
+    if (response.ok) {
+      const result = await response.json()
+      console.log('Item aktualisiert:', result)
+    } else {
+      const errorData = await response.text()
+      console.error('Fehler beim Aktualisieren:', response.status, errorData)
+    }
+  } catch (err) {
+    console.error('Netzwerkfehler:', err)
+  }
+
+  // Eingaben zurücksetzen
+  name.value = ''
+  quantity.value = 1
 }
+
+
+// function goToItem(id){
+//     //hier bearbeiten logik vom backend
+//     item.name = editableName.value;
+//     item.quantity = editableQuantity.value
+//     console.log("neue item daten", editableName, editableQuantity);
+//     router.push(`/items/${id}`);
+// }
 </script>
 
 <style scoped>

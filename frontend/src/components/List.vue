@@ -30,10 +30,42 @@
 </template>
 
 <script setup>
-import items from '../data/items.json'
+import { ref, onMounted } from 'vue';
+//import items from '../data/items.json'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
+const items = ref([]); // statt import aus JSON
+
+// Items von der API abrufen
+const fetchItems = async () => {
+  try {
+    console.log("Trying to fetch....")
+    const res = await fetch('http://localhost:8080/items/');
+    if (!res.ok) throw new Error('Fehler beim Abrufen der Items');
+    const data = await res.json();
+    console.log("Items fetched correctly.")
+    if (Array.isArray(data) && data.length === 0) {
+      console.warn('API liefert leeres Array – Fallback-Daten werden verwendet.');
+
+      items.value = [
+        { id: 1, name: 'Apfel', quantity: 5 },
+        { id: 2, name: 'Milch', quantity: 2 },
+        { id: 3, name: 'Brot', quantity: 1 },
+        { id: 4, name: 'Eier', quantity: 10 },
+      ];
+    } else {
+      items.value = data;
+      console.log("Items fetched correctly.")
+    }
+  } catch (err) {
+    console.error('Fehler beim Laden der Items:', err.message);
+  }
+};
+
+onMounted(fetchItems); // automatisch laden beim Start
+
 
 function goToAdd() {
   router.push('/add');
