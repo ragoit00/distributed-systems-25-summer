@@ -1,13 +1,14 @@
-version: '3.8'
+# version: '3.8'
 services:
   backend:
-    build: ./backend
-    ports:
-      - "3000:3000"
-    environment:
-      - PORT=3000
+    build:
+      context: ./shopping-app
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    environment:
+      - PORT=8080
+    container_name: backend-container
   vue-frontend:
     build:
       context: ./frontend      

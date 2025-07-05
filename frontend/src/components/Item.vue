@@ -24,23 +24,115 @@
 </template>
 
 <script setup>
+console.log("hää")
 import { useRoute, useRouter } from 'vue-router'
-import items from '../data/items.json'
+// import items from '../data/items.json'
+import { onMounted, ref } from 'vue'
+
+const item = ref(null); // statt import aus JSON
 
 const route = useRoute()
 const router = useRouter()
 const id = Number(route.params.id)
 
-const item = items.find(i => i.id === id)
+let array = [
+        { id: 1, name: 'Apfel', quantity: 5 },
+        { id: 2, name: 'Milch', quantity: 2 },
+        { id: 3, name: 'Brot', quantity: 1 },
+        { id: 4, name: 'Eier', quantity: 10 },
+      ];
+
+// const item = items.find(i => i.id === id)
+
+const fetchItems = async () => {
+  try {
+    console.log("Trying to fetch....")
+    const res = await fetch(`http://localhost:8080/items/${id}`);
+    console.log("res status", res.status, res)
+
+    if (res.status === 404) {
+      console.warn('Item nicht gefunden (404) – Fallback-Daten werden verwendet.');
+
+       let array = [
+        { id: 1, name: 'Apfel', quantity: 5 },
+        { id: 2, name: 'Milch', quantity: 2 },
+        { id: 3, name: 'Brot', quantity: 1 },
+        { id: 4, name: 'Eier', quantity: 10 },
+      ];
+
+      console.log("item und id", array, id);
+
+      item.value = array.find(sult => sult.id === id)
+
+      console.log("item id",item , item.id);
+
+      return item;
+    }
+
+    if (!res.ok) throw new Error(`Fehler beim Abrufen der Items (Status: ${res.status})`);
+
+    const data = await res.json();
+    console.log("Items fetched correctly.")
+
+    if (Array.isArray(data) && data.length === 0) {
+      console.warn('API liefert leeres Array – Fallback-Daten werden verwendet.');
+      item.value = [
+        { id: 1, name: 'Apfel', quantity: 5 },
+        { id: 2, name: 'Milch', quantity: 2 },
+        { id: 3, name: 'Brot', quantity: 1 },
+        { id: 4, name: 'Eier', quantity: 10 },
+      ];
+    } else {
+      item.value = data;
+      console.log("Items fetched correctly.", item.value)
+    }
+  } catch (err) {
+    console.error('Fehler beim Laden der Items:', err.message);
+    
+  }
+};
+
+
+onMounted(fetchItems);
 
 function goToEdit(id) {
   router.push(`/items/${id}/edit`);
 }
 
-function deleteItem(id) {
-  // hier delete logik von backend
-  console.log("Item deleted")
+async function deleteItem(id) {
+  try {
+    const response = await fetch(`http://localhost:8080/items/${id}`, {
+      method: 'DELETE',
+    })
+
+     if (response.status === 404) {
+      console.warn(`Item ${id} nicht im Backend gefunden (404) – versuche Fallback-Löschung`);
+
+      // Wenn item.value ein Array ist:
+      console.log("array in delete", array)
+      if (array !== null) {
+        item.value = array.find(i => i.id === id);
+        console.log(`Item ${id} lokal (Mockdaten) gelöscht.`);
+      } else {
+        console.warn("Fallback-Löschung nicht möglich – keine Array-Struktur in item.value.");
+      }
+
+      router.push('/items');
+      return;
+    }
+
+    if (response.ok) {
+      console.log(`Item ${id} erfolgreich gelöscht`)
+      router.push('/items') // Zurück zur Liste, wenn gewünscht
+    } else {
+      const errorText = await response.text()
+      console.error(`Fehler beim Löschen von Item ${id}:`, response.status, errorText)
+    }
+  } catch (err) {
+    console.error('Netzwerkfehler beim Löschen:', err)
+  }
 }
+
 
 function goBack() {
   router.push('/items');

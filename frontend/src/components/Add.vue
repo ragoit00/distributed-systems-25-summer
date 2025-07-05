@@ -21,14 +21,34 @@ import { ref } from 'vue'
 const name = ref('')
 const quantity = ref(1)
 
-function addItem() {
+async function addItem() {
   const newItem = {
-    id: Date.now(), // einfache eindeutige ID
     name: name.value,
     quantity: quantity.value
   }
 
-  console.log('Neues Item:', newItem)
+  try {
+    const response = await fetch('http://localhost:8080/items/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newItem)
+    })
+
+     if (response.status === 404) {
+      console.log("versuche zu posten", response, response.body);
+     }
+    if (response.ok) {
+      const result = await response.json()
+      console.log('Item hinzugefügt/aktualisiert:', result)
+    } else {
+      const errorData = await response.text()
+      console.error('Fehler beim Hinzufügen:', response.status, errorData)
+    }
+  } catch (err) {
+    console.error('Netzwerkfehler:', err)
+  }
 
   // Eingaben zurücksetzen
   name.value = ''

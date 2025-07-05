@@ -23,7 +23,10 @@ Dieses Projekt besteht aus:
 
 ## Anwendung starten
 ...
-
+1. Make sure the file `gradlew` is set to `LF` instead of `CRLF` in VSCode (in the bottom right when `gradlew` is opened)
+2. `docker compose run --build` in root directory
+3. Frontend available at http://localhost:8081/
+4. Backend available at e.g. http://localhost:8080/items/
 ---
 
 ## Projektstruktur
